@@ -19,7 +19,7 @@ class Mesh:
         self.device = device
         if vs is not None and faces is not None:
             self.vs, self.faces = vs.cpu().numpy(), faces.cpu().numpy()
-            self.scale, self.translations = 1.0, np.zeros(3,)
+            self.scale, self.translations = 1.0, np.zeros(3, )
         else:
             self.vs, self.faces = load_obj(file)
             self.normalize_unit_bb()
@@ -30,7 +30,7 @@ class Mesh:
         if hold_history:
             self.init_history()
         if gfmm:
-            self.gfmm = self.build_gfmm() #TODO get rid of this DS
+            self.gfmm = self.build_gfmm()  # TODO get rid of this DS
         else:
             self.gfmm = None
         if type(self.vs) is np.ndarray:
@@ -181,7 +181,7 @@ class Mesh:
 
             pc_per_face_masked = pc[argmin, :].clone()
             pc_per_face_masked[min == float('inf'), :] = float('nan')
-            pc_per_face = torch.zeros(mid_points.shape[0], 6).\
+            pc_per_face = torch.zeros(mid_points.shape[0], 6). \
                 type(pc_per_face_masked.dtype).to(pc_per_face_masked.device)
             pc_per_face[~ knn_mask, :pc.shape[-1]] = pc_per_face_masked
             pc_per_face[knn_mask, :] = float('nan')
@@ -212,9 +212,9 @@ class Mesh:
         """
         self.vs = verts
 
-    def deep_copy(self): #TODO see if can do this better
+    def deep_copy(self):  # TODO see if can do this better
         new_mesh = Mesh(file=None)
-        types = [np.ndarray, torch.Tensor,  dict, list, str, int, bool, float]
+        types = [np.ndarray, torch.Tensor, dict, list, str, int, bool, float]
         for attr in self.__dir__():
             if attr == '__dict__':
                 continue
@@ -284,25 +284,25 @@ class Mesh:
 
     def init_history(self):
         self.history_data = {
-                               'groups': [],
-                               'gemm_edges': [self.gemm_edges.copy()],
-                               'occurrences': [],
-                               'edges_count': [self.edges_count],
-                              }
+            'groups': [],
+            'gemm_edges': [self.gemm_edges.copy()],
+            'occurrences': [],
+            'edges_count': [self.edges_count],
+        }
 
     def get_groups(self):
         return self.history_data['groups'].pop()
 
     def get_occurrences(self):
         return self.history_data['occurrences'].pop()
-    
+
     def __clean_history(self, groups, pool_mask):
         if self.history_data is not None:
             self.history_data['occurrences'].append(groups.get_occurrences())
             self.history_data['groups'].append(groups.get_groups(pool_mask))
             self.history_data['gemm_edges'].append(self.gemm_edges.copy())
             self.history_data['edges_count'].append(self.edges_count)
-    
+
     def unroll_gemm(self):
         self.history_data['gemm_edges'].pop()
         self.gemm_edges = self.history_data['gemm_edges'][-1]
@@ -322,6 +322,7 @@ class PartMesh:
     """
     Divides a mesh into submeshes
     """
+
     def __init__(self, main_mesh: Mesh, vs_groups=None, num_parts=1, bfs_depth=0, n=-1):
         """
         Part Mesh constructor
@@ -330,7 +331,7 @@ class PartMesh:
         :param num_parts: number of parts to seperate the main_mesh into
         """
         self.main_mesh = main_mesh
-        if vs_groups is not None: #TODO is this neccesary?
+        if vs_groups is not None:  # TODO is this neccesary?
             self.vs_groups = vs_groups
         else:
             if n != -1:
@@ -424,7 +425,7 @@ class PartMesh:
         :param mesh: the mesh to sub
         :return: the new submesh
         """
-        vs_mask = torch.zeros(mesh.vs.shape[0])
+        vs_mask = torch.zeros(mesh.vs.shape[0], device=mesh.vs.device)
         vs_mask[vs_index] = 1
         faces_mask = vs_mask[mesh.faces].sum(dim=-1) > 0
         new_faces = mesh.faces[faces_mask].clone()
@@ -433,7 +434,7 @@ class PartMesh:
         new_vs_mask[all_verts] = 1
         new_vs_index = PartMesh.mask_to_index(new_vs_mask)
         new_vs = mesh.vs[new_vs_index, :].clone()
-        vs_mask = torch.zeros(mesh.vs.shape[0])
+        vs_mask = torch.zeros(mesh.vs.shape[0], device=mesh.vs.device)
         vs_mask[new_vs_index] = 1
         cummusum = torch.cumsum(1 - vs_mask, dim=0)
         new_faces -= cummusum[new_faces].to(new_faces.device).long()
@@ -441,7 +442,7 @@ class PartMesh:
         return m, new_vs_index
 
     @staticmethod
-    def index_to_mask(index: torch.Tensor, len:int):
+    def index_to_mask(index: torch.Tensor, len: int):
         mask = torch.zeros(len)
         for i in index:
             mask[i] = 1
@@ -454,7 +455,7 @@ class PartMesh:
         for i, val in enumerate(mask):
             if val == 1:
                 lst.append(i)
-        return torch.tensor(lst).type(torch.long)
+        return torch.tensor(lst, device=mask.device).type(torch.long)
 
     @staticmethod
     def segment_shape(vs: torch.Tensor, seg_num: int):
@@ -467,7 +468,7 @@ class PartMesh:
         diff = vs - center[None, :]
         eighth = torch.zeros(vs.shape[0]).float().to(diff.device)
         if seg_num >= 2:
-            eighth += 1 *(diff[:, 0] > 0).float()
+            eighth += 1 * (diff[:, 0] > 0).float()
         if seg_num >= 4:
             eighth += 2 * (diff[:, 1] > 0).float()
         if seg_num >= 8:

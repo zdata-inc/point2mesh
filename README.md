@@ -20,11 +20,11 @@ The code was written by [Rana Hanocka](https://www.cs.tau.ac.il/~hanocka/) and [
 ### Installation
 - Clone this repo:
 ```bash
-git clone https://github.com/ranahanocka/point2mesh.git
+git clone https://github.com/zdata-inc/point2mesh.git
 cd point2mesh
 ```
 #### Setup Conda Environment
-- Relies on [PyTorch](https://pytorch.org/) version 1.4 (or 1.5) and [PyTorch3D](https://github.com/facebookresearch/pytorch3d) version 0.2.0. <br>
+- Relies on [PyTorch](https://pytorch.org/) version 1.13.0 and [PyTorch3D](https://github.com/facebookresearch/pytorch3d) version 0.7.3. <br>
 Install via conda environment `conda env create -f environment.yml` (creates an environment called point2mesh)
 
 #### Install "Manifold" Software
