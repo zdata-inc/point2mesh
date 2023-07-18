@@ -38,7 +38,7 @@ conda install pytorch=1.13.0 torchvision pytorch-cuda=11.6 -c pytorch -c nvidia
 conda install -c fvcore -c iopath -c conda-forge fvcore iopath
 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
 pip install trimesh
-pip install bpy
+# pip install bpy -- requires python 3.10 or python < 3.8
 ```
 
 #### Install "Manifold" Software
