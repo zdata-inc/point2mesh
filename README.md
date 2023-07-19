@@ -27,7 +27,7 @@ cd point2mesh
 git submodule init
 ```
 
-#### Setup Conda Environment
+#### Setup with Conda
 Refer to the [PyTorch3D repo](https://github.com/facebookresearch/pytorch3d/blob/main/INSTALL.md) for complete
 installation instructions
 
@@ -41,7 +41,16 @@ pip install trimesh
 # pip install bpy -- requires python 3.10 or python < 3.8
 ```
 
-#### Install "Manifold" Software
+#### Setup without Conda
+```bash
+python3 -m venv point2mesh
+pip install torch==1.13.0 torchvision
+pip install torch --pre --extra-index-url https://download.pytorch.org/whl/nightly/cu116
+pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+pip install trimesh
+```
+
+#### Install "Manifold" Software on Linux
 Refer to the [Manifold repo](https://github.com/zdata-inc/Manifold) for complete installation instructions.
 
 ```bash
@@ -51,7 +60,16 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ```
-  
+
+#### Install "Manifold" Software on Windows
+```bash
+cd Manifold
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --target Manifold --config Release
+```
+
 # Running Examples
  
 ### Get Data

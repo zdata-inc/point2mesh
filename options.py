@@ -1,9 +1,17 @@
-import argparse
 import os
-import numpy as np
+import sys
 import torch
+import argparse
+import numpy as np
 
-MANIFOLD_DIR = r'~/Manifold/build'
+MANIFOLD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Manifold/build')
+
+if sys.platform == 'win32':
+    MANIFOLD_SCRIPT_PATH = os.path.join(MANIFOLD_DIR, 'Release/manifold.exe')
+    SIMPLIFY_SCRIPT_PATH = os.path.join(MANIFOLD_DIR, 'Release/simplify.exe')
+else:
+    MANIFOLD_SCRIPT_PATH = os.path.join(MANIFOLD_DIR, 'manifold')
+    SIMPLIFY_SCRIPT_PATH = os.path.join(MANIFOLD_DIR, 'simplify')
 
 
 class Options:

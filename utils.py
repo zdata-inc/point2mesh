@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import os
 import uuid
-from options import MANIFOLD_DIR
+from options import MANIFOLD_SCRIPT_PATH, SIMPLIFY_SCRIPT_PATH
 import glob
 
 def manifold_upsample(mesh, save_path, Mesh, num_faces=2000, res=3000, simplify=True):
@@ -13,15 +13,13 @@ def manifold_upsample(mesh, save_path, Mesh, num_faces=2000, res=3000, simplify=
     temp_file = os.path.join(save_path, random_file_name('obj'))
     opts = ' ' + str(res) if res is not None else ''
 
-    manifold_script_path = os.path.join(MANIFOLD_DIR, 'manifold')
-    if not os.path.exists(manifold_script_path):
-        raise FileNotFoundError(f'{manifold_script_path} not found')
-    cmd = "{} {} {}".format(manifold_script_path, fname, temp_file + opts)
+    if not os.path.exists(MANIFOLD_SCRIPT_PATH):
+        raise FileNotFoundError(f'{MANIFOLD_SCRIPT_PATH} not found')
+    cmd = "{} {} {}".format(MANIFOLD_SCRIPT_PATH, fname, temp_file + opts)
     os.system(cmd)
 
     if simplify:
-        cmd = "{} -i {} -o {} -f {}".format(os.path.join(MANIFOLD_DIR, 'simplify'), temp_file,
-                                                             temp_file, num_faces)
+        cmd = "{} -i {} -o {} -f {}".format(SIMPLIFY_SCRIPT_PATH, temp_file, temp_file, num_faces)
         os.system(cmd)
 
     m_out = Mesh(temp_file, hold_history=True, device=mesh.device)
